@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sound recorder</title>
+</head>
+
+<body>
+    <div class="set-btn">
+        <button class="btn">start recording</button>
+    </div>
+
+    <button class="start">start</button>
+    <button class="stop">stop</button>
+
+    <style>
+        .start,
+        .stop {
+            display: none;
+        }
+        
+        .set-btn {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .btn {
+            font-size: 50px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(117, 191, 255);
+            padding: 10px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        const btn = document.querySelector(".btn");
+        const start = document.querySelector(".start");
+        const stop = document.querySelector(".stop");
+
+        btn.onclick = () => {
+            btn.style.transform = "scale(0.5)";
+            setTimeout(() => {
+                btn.style.transform = "scale(1)";
+            }, 300);
+
+
+            if (btn.textContent == "start recording") {
+                btn.textContent = "stop recording";
+                btn.style.backgroundColor = "rgb(231, 100, 88)";
+                start.click();
+            } else {
+                btn.textContent = "start recording";
+                btn.style.backgroundColor = "rgb(117, 191, 255)";
+                stop.click();
+            }
+
+        }
+
+        navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: true
+        }).then(stream => {
+            const recorder = new MediaRecorder(stream);
+            let data = [];
+
+            recorder.ondataavailable = e => {
+                data.push(e.data);
+                if (recorder.state == "inactive") {
+                    let blob = new Blob(data, {
+                        type: "audio/mp3"
+                    });
+                    let file = URL.createObjectURL(blob);
+                    let audio = document.createElement("audio");
+                    audio.setAttribute("controls", "controls");
+                    audio.src = file;
+                    document.body.append(audio);
+                }
+            }
+
+            start.onclick = () => {
+                recorder.start();
+                console.log("start");
+            }
+            stop.onclick = () => {
+                recorder.stop();
+                console.log("stop");
+            }
+        });
+    </script>
+</body>
+
+</html>

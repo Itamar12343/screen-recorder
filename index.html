@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>screen record</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+    <link rel="icon" href="https://drive.google.com/uc?export=download&id=152qxkGr3TAtCjwvB-NbHoFgC62iwg-cY">
+</head>
+
+<body>
+    <video controls class="video"></video>
+    <div class="display">
+        <h1 class="text">record your screen</h1>
+        <div class="icon"><i class="bi bi-camera-video"></i></div>
+    </div>
+    <div class="btns">
+        <button class="start">start</button>
+        <button class="stop">stop</button>
+        <a class="download">download</a>
+    </div>
+    <button class="do">download</button>
+
+
+    <style>
+        .icon {
+            color: #fff;
+            font-size: 60px;
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+        }
+        
+        .video {
+            height: 480px;
+            width: 640px;
+            position: relative;
+            top: 50px;
+            left: 50%;
+            transform: translate(-50%);
+            border-radius: 20px;
+        }
+        
+        .display {
+            height: 484px;
+            width: 640px;
+            position: absolute;
+            top: 56px;
+            left: 50%;
+            transform: translate(-50%);
+            border-radius: 20px;
+            background-color: rgb(253, 213, 182);
+            cursor: pointer;
+            transition: 0.4s;
+        }
+        
+        .text {
+            color: #fff;
+            font-size: 36px;
+            position: relative;
+            top: 180px;
+            text-align: center;
+            transition: 0.4s;
+        }
+        
+        .display:hover {
+            box-shadow: 0 0 80px 6px rgb(82, 78, 78);
+        }
+        
+        .btns {
+            text-align: center;
+            position: relative;
+            top: 80px;
+        }
+        
+        .start {
+            font-size: 40px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(173, 213, 249);
+            margin-right: 50px;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+        
+        .do {
+            font-size: 40px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(173, 213, 249);
+            margin-right: 50px;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+            left: 50%;
+            top: -500px;
+            transform: translate(-50%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .stop {
+            font-size: 40px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgb(250, 209, 147);
+            cursor: pointer;
+            transition: 0.4s;
+        }
+        
+        .start:hover {
+            box-shadow: 0 0 60px 6px rgb(105, 103, 103);
+            color: #fff;
+        }
+        
+        .do:hover {
+            box-shadow: 0 0 60px 6px rgb(105, 103, 103);
+            color: #fff;
+        }
+        
+        .stop:hover {
+            box-shadow: 0 0 60px 6px rgb(105, 103, 103);
+            color: #fff;
+        }
+        
+        .download {
+            display: none;
+        }
+    </style>
+
+    <script>
+        const start = document.querySelector(".start");
+        const stop = document.querySelector(".stop");
+        const video = document.querySelector(".video");
+        const download = document.querySelector(".download");
+        const don = document.querySelector(".do");
+        let count = 1;
+        const display = document.querySelector(".display");
+        const text = document.querySelector(".text");
+
+        navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: true
+        }).then(stream => {
+            const recorder = new MediaRecorder(stream);
+            recorder.ondataavailable = e => {
+                const data = [];
+                data.push(e.data);
+                if (recorder.state == "inactive") {
+                    const blob = new Blob(data);
+                    const file = URL.createObjectURL(blob);
+                    video.src = file;
+                    download.download = `recording${count}.mp4`;
+                    localStorage.setItem("numm", Number(count) + 1);
+                    download.href = file;
+                    don.style.opacity = "1";
+                    don.style.pointerEvents = "all";
+                    display.style.opacity = "0";
+                    display.style.pointerEvents = "none";
+                }
+            }
+            start.onclick = () => {
+                recorder.start();
+            }
+
+            display.onclick = () => {
+                recorder.start();
+            }
+
+            stop.onclick = () => {
+                recorder.stop();
+            }
+
+            recorder.onstart = () => {
+                text.textContent = "the recording has started!";
+                text.style.color = "red";
+            }
+        });
+
+        don.onclick = () => {
+            download.click();
+        }
+
+        setInterval(() => {
+            if (localStorage.getItem("numm")) {
+                count = localStorage.getItem("numm");
+            }
+        }, 100);
+    </script>
+</body>
+
+</html>
